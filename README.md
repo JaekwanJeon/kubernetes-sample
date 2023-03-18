@@ -52,6 +52,7 @@ mynginx-svc   NodePort    10.97.37.148   <none>        8080:31001/TCP   7s
 
   
 $ ifconfig
+
 docker0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
         inet 172.17.0.1  netmask 255.255.0.0  broadcast 172.17.255.255
 
