@@ -82,8 +82,7 @@ Commercial support is available at
 ## Nginx Ingress
 ### Nginx Ingress 설치
 ```
-$ kubectl apply -f 
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.44.0/deploy/static/provider/cloud/deploy.yaml
+$ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.44.0/deploy/static/provider/cloud/deploy.yaml
 namespace/ingress-nginx created
 serviceaccount/ingress-nginx created
 configmap/ingress-nginx-controller created
@@ -135,7 +134,7 @@ NAME                                 TYPE        CLUSTER-IP       EXTERNAL-IP   
 ingress-nginx-controller             NodePort    10.107.167.157   <none>        80:31852/TCP,443:32238/TCP   117s
 ingress-nginx-controller-admission   ClusterIP   10.99.73.175     <none>        443/TCP                      117s
 ```
-### Ingress 및 Pod 설치
+### Ingress 및 Pod 설치(NodePort)
 ```
 $ kubectl apply -f ingress/
 deployment.apps/frontend created
@@ -257,7 +256,57 @@ Commercial support is available at
 <p><em>Thank you for using nginx.</em></p>
 </body>
 </html>
+```
 
+### Ingress 및 Pod 설치(LoadBalancer)
+```
+
+
+$ kubectl apply -f ingress/
+$ kubectl delete -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.1.3/deploy/static/provider/baremetal/deploy.yaml
+namespace "ingress-nginx" deleted
+serviceaccount "ingress-nginx" deleted
+serviceaccount "ingress-nginx-admission" deleted
+role.rbac.authorization.k8s.io "ingress-nginx" deleted
+role.rbac.authorization.k8s.io "ingress-nginx-admission" deleted
+clusterrole.rbac.authorization.k8s.io "ingress-nginx" deleted
+clusterrole.rbac.authorization.k8s.io "ingress-nginx-admission" deleted
+rolebinding.rbac.authorization.k8s.io "ingress-nginx" deleted
+rolebinding.rbac.authorization.k8s.io "ingress-nginx-admission" deleted
+clusterrolebinding.rbac.authorization.k8s.io "ingress-nginx" deleted
+clusterrolebinding.rbac.authorization.k8s.io "ingress-nginx-admission" deleted
+configmap "ingress-nginx-controller" deleted
+service "ingress-nginx-controller" deleted
+service "ingress-nginx-controller-admission" deleted
+deployment.apps "ingress-nginx-controller" deleted
+job.batch "ingress-nginx-admission-create" deleted
+job.batch "ingress-nginx-admission-patch" deleted
+ingressclass.networking.k8s.io "nginx" deleted
+
+$ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.3.1/deploy/static/provider/cloud/deploy.yaml
+namespace/ingress-nginx created
+serviceaccount/ingress-nginx created
+serviceaccount/ingress-nginx-admission created
+role.rbac.authorization.k8s.io/ingress-nginx created
+role.rbac.authorization.k8s.io/ingress-nginx-admission created
+clusterrole.rbac.authorization.k8s.io/ingress-nginx created
+clusterrole.rbac.authorization.k8s.io/ingress-nginx-admission created
+rolebinding.rbac.authorization.k8s.io/ingress-nginx created
+rolebinding.rbac.authorization.k8s.io/ingress-nginx-admission created
+clusterrolebinding.rbac.authorization.k8s.io/ingress-nginx created
+clusterrolebinding.rbac.authorization.k8s.io/ingress-nginx-admission created
+configmap/ingress-nginx-controller created
+service/ingress-nginx-controller created
+service/ingress-nginx-controller-admission created
+deployment.apps/ingress-nginx-controller created
+job.batch/ingress-nginx-admission-create created
+job.batch/ingress-nginx-admission-patch created
+ingressclass.networking.k8s.io/nginx created
+
+$ kubectl get svc -n ingress-nginx
+NAME                                 TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
+ingress-nginx-controller             LoadBalancer   10.97.71.217    <pending>     80:30096/TCP,443:30309/TCP   45s
+ingress-nginx-controller-admission   ClusterIP      10.103.237.19   <none>        443/TCP                      44s
 
 
 ```
