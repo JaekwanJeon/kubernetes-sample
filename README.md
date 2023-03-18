@@ -133,9 +133,7 @@ $ kubectl get svc -n ingress-nginx
 NAME                                 TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE
 ingress-nginx-controller             NodePort    10.107.167.157   <none>        80:31852/TCP,443:32238/TCP   117s
 ingress-nginx-controller-admission   ClusterIP   10.99.73.175     <none>        443/TCP                      117s
-```
-### Ingress 및 Pod 설치(NodePort)
-```
+
 $ kubectl apply -f ingress/
 deployment.apps/frontend created
 service/frontend created
