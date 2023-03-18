@@ -81,6 +81,8 @@ Commercial support is available at
   
 ## Nginx Ingress
 ### Nginx Ingress 설치
+-- ingress contoller 버젼 변경을 통해서 해결함(0.44.0 -> 1.3.1) => 여기서부터 참고하자
+
 ```
 $ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.44.0/deploy/static/provider/cloud/deploy.yaml
 namespace/ingress-nginx created
