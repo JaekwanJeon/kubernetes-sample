@@ -393,6 +393,18 @@ Thank you for installing Istio 1.17.  Please take a few minutes to tell us about
 $ kubectl label namespace default istio-injection=enabled
 namespace/default labeled
 
+$ kubectl get ns -L istio-injection
+NAME              STATUS   AGE   ISTIO-INJECTION
+covid             Active   30h   
+default           Active   11d   enabled
+istio-system      Active   49m   
+kube-flannel      Active   11d   
+kube-node-lease   Active   11d   
+kube-public       Active   11d   
+kube-system       Active   11d   
+login             Active   11d   
+
+
 $ kubectl apply -f samples/bookinfo/platform/kube/bookinfo.yaml
 service/details created
 serviceaccount/bookinfo-details created
