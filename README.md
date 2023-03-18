@@ -442,6 +442,6 @@ $ export INGRESS_HOST=$(kubectl get po -l istio=ingressgateway -n istio-system -
 $ export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT
 $ echo "$GATEWAY_URL"
 192.168.0.3:30468
-
-![image](https://user-images.githubusercontent.com/3446997/226106623-799d187a-40b4-4886-b848-e8610b76e4b9.png)
 ```
+![image](https://user-images.githubusercontent.com/3446997/226106623-799d187a-40b4-4886-b848-e8610b76e4b9.png)
+
