@@ -79,4 +79,11 @@ Commercial support is available at
 </html>
 ```
   
+## Nginx Ingress
+### BareMetal 설치하기
+$ kubectl apply -f 
+https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.34.1/deploy/static/provider/baremetal/deploy.yaml
+
+
+
 
