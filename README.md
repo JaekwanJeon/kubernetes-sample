@@ -16,7 +16,7 @@ pod/curl unchanged
 
 $ kubectl logs curl
 ```html
-  <html>
+<html>
 <head>
 <title>Welcome to nginx!</title>
 <style>
@@ -40,4 +40,46 @@ Commercial support is available at
 </html>
 ```
 
+### Pod + NodePort
+$ kubectl apply -f basic/pod-nodeport.yaml
+pod/mynginx created
+service/mynginx-svc created
+
+$ kubectl get svc
+NAME          TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE
+kubernetes    ClusterIP   10.96.0.1      <none>        443/TCP          10d
+mynginx-svc   NodePort    10.97.37.148   <none>        8080:31001/TCP   7s
+
+  
+$ ifconfig
+docker0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+        inet 172.17.0.1  netmask 255.255.0.0  broadcast 172.17.255.255
+
+$ curl 172.17.0.1:31001
+```html
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
+```
+  
 
