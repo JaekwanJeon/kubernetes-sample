@@ -337,6 +337,7 @@ Commercial support is available at
 
 ### Istio 설치
 
+#### 설치 예제(Istio 제공 BookInfo 샘플)
 $ mkdir ~/bin
 $ cd bin
 $ curl -L https://istio.io/downloadIstio | sh -
