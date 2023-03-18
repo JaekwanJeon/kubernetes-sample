@@ -3,22 +3,18 @@
 ## Pod
 
 ### Pod + ClusterIP
+```
 $ kubectl apply -f basic/pod-clusterip.yaml
 pod/mynginx unchanged
 service/mynginx-svc unchanged
 
 $ kubectl get svc
-
 NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
-
 mynginx-svc   ClusterIP   10.97.219.125   <none>        8080/TCP   14m
 
 $ kubectl apply -f basic/curl-pod.yaml
-  
 pod/curl unchanged
-
 $ kubectl logs curl
-```html
 <html>
 <head>
 <title>Welcome to nginx!</title>
@@ -44,24 +40,20 @@ Commercial support is available at
 ```
 
 ### Pod + NodePort
+```
 $ kubectl apply -f basic/pod-nodeport.yaml
 pod/mynginx created
 service/mynginx-svc created
 
 $ kubectl get svc
-  
 NAME          TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE
-  
 mynginx-svc   NodePort    10.97.37.148   <none>        8080:31001/TCP   7s
 
-  
 $ ifconfig
-
 docker0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
         inet 172.17.0.1  netmask 255.255.0.0  broadcast 172.17.255.255
 
 $ curl 172.17.0.1:31001
-```html
 <!DOCTYPE html>
 <html>
 <head>
