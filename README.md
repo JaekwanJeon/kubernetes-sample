@@ -10,6 +10,7 @@ service/mynginx-svc unchanged
 $ kubectl get svc
 
 NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+
 mynginx-svc   ClusterIP   10.97.219.125   <none>        8080/TCP   14m
 
 $ kubectl apply -f basic/curl-pod.yaml
@@ -50,7 +51,7 @@ service/mynginx-svc created
 $ kubectl get svc
   
 NAME          TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE
-kubernetes    ClusterIP   10.96.0.1      <none>        443/TCP          10d
+  
 mynginx-svc   NodePort    10.97.37.148   <none>        8080:31001/TCP   7s
 
   
