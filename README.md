@@ -259,9 +259,8 @@ Commercial support is available at
 ```
 
 ### Ingress 및 Pod 설치(LoadBalancer)
+https://mlops-for-all.github.io/docs/appendix/metallb/
 ```
-
-
 $ kubectl apply -f ingress/
 $ kubectl delete -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.1.3/deploy/static/provider/baremetal/deploy.yaml
 namespace "ingress-nginx" deleted
