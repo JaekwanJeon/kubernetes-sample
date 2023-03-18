@@ -304,8 +304,33 @@ ingressclass.networking.k8s.io/nginx created
 
 $ kubectl get svc -n ingress-nginx
 NAME                                 TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
-ingress-nginx-controller             LoadBalancer   10.97.71.217    <pending>     80:30096/TCP,443:30309/TCP   45s
-ingress-nginx-controller-admission   ClusterIP      10.103.237.19   <none>        443/TCP                      44s
+ingress-nginx-controller             LoadBalancer   10.97.71.217    <pending>     80:30096/TCP,443:30309/TCP   11m
+ingress-nginx-controller-admission   ClusterIP      10.103.237.19   <none>        443/TCP                      11m
 
+-- LoadBalancer도 VM IP를 통해서 되는 걸 보면 NodePort기능도 적용이 된다. External IP는 클라우드 서비스나 MetalLB같은 로드벨런서가 있어야 한다.
+jaekwanjeon@kubernetes-master:~/arch-k8s-sample/kubernetes-sample$ curl 172.17.0.1:30096
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
 
 ```
