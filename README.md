@@ -338,6 +338,7 @@ Commercial support is available at
 ### Istio 설치
 
 #### 설치 예제(Istio 제공 BookInfo 샘플)
+```
 $ mkdir ~/bin
 $ cd bin
 $ curl -L https://istio.io/downloadIstio | sh -
@@ -443,4 +444,4 @@ $ echo "$GATEWAY_URL"
 192.168.0.3:30468
 
 ![image](https://user-images.githubusercontent.com/3446997/226106623-799d187a-40b4-4886-b848-e8610b76e4b9.png)
-
+```
