@@ -1,0 +1,39 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway    
+metadata:
+  name: simple-istio-gateway
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller  <-- selector 타입으로 istio-gateway를 사용하였기 때문에 gateway의 트래픽을 받을 Virtual Service가 등록되어야 함!!
+  servers:
+  - port:
+      number: 80      # 80으로 Listen
+      name: http
+      protocol: HTTP   # http로 Client트래픽을 받도록 함
+    hosts:
+    - "*"              # 모든 호스트 허용
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService    # 위의 gateway트래픽을 수용하여 라우팅 룰이 적용된다.
+metadata:
+  name: simple-vertual-service
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - simple-istio-gateway    # 위의 Gateway의 메타데이터 이름이 지정되야 맵핑됩니다.
+  http:
+  - match:              # 말 그대로 매치되는 URL을 확인하여 -> route 정책된다.
+    - uri:
+        exact: /
+    #- uri:
+    #    exact: /login
+    #- uri:
+    #    exact: /logout
+    #- uri:
+    #    prefix: /api/v1/products
+    route:
+    - destination:      # 매치된 URL이 모두 productpage의 9080으로 포워딩한다.
+        host: frontend-svc
+        port:
+          number: 8080
