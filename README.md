@@ -457,3 +457,48 @@ $ echo "$GATEWAY_URL"
 ```
 ![image](https://user-images.githubusercontent.com/3446997/226106623-799d187a-40b4-4886-b848-e8610b76e4b9.png)
 
+#### 설치 예제(Istio 폴더)
+
+```
+$ kubectl apply -f ./istio/
+$ kubectl apply -f .
+deployment.apps/frontend unchanged
+service/frontend-svc created
+gateway.networking.istio.io/simple-istio-gateway unchanged
+virtualservice.networking.istio.io/simple-vertual-service unchanged
+
+$ istioctl analyze
+✔ No validation issues found when analyzing namespace: default.
+
+$ export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
+jaekwanjeon@kubernetes-master:~/arch-k8s-sample/kubernetes-sample/istio$ export SECURE_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="https")].nodePort}'
+> )
+$ export INGRESS_HOST=$(kubectl get po -l istio=ingressgateway -n istio-system -o jsonpath='{.items[0].status.hostIP}')
+$ export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT
+$ echo "$GATEWAY_URL"
+192.168.0.3:30468
+$ curl 192.168.0.3:30468
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
+```
