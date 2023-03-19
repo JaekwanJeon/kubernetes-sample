@@ -304,8 +304,201 @@ ingressclass.networking.k8s.io/nginx created
 
 $ kubectl get svc -n ingress-nginx
 NAME                                 TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
-ingress-nginx-controller             LoadBalancer   10.97.71.217    <pending>     80:30096/TCP,443:30309/TCP   45s
-ingress-nginx-controller-admission   ClusterIP      10.103.237.19   <none>        443/TCP                      44s
+ingress-nginx-controller             LoadBalancer   10.97.71.217    <pending>     80:30096/TCP,443:30309/TCP   11m
+ingress-nginx-controller-admission   ClusterIP      10.103.237.19   <none>        443/TCP                      11m
+
+-- LoadBalancer도 VM IP를 통해서 되는 걸 보면 NodePort기능도 적용이 된다. External IP는 클라우드 서비스나 MetalLB같은 로드벨런서가 있어야 한다.
+jaekwanjeon@kubernetes-master:~/arch-k8s-sample/kubernetes-sample$ curl 172.17.0.1:30096
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
+
+```
+
+### Istio 설치
+
+#### 설치 예제(Istio 제공 BookInfo 샘플)
+```
+$ mkdir ~/bin
+$ cd bin
+$ curl -L https://istio.io/downloadIstio | sh -
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   102  100   102    0     0    286      0 --:--:-- --:--:-- --:--:--   286
+100  4856  100  4856    0     0   6331      0 --:--:-- --:--:-- --:--:--  6331
+
+Downloading istio-1.17.1 from https://github.com/istio/istio/releases/download/1.17.1/istio-1.17.1-linux-amd64.tar.gz ...
+Istio 1.17.1 Download Complete!
+
+Istio has been successfully downloaded into the istio-1.17.1 folder on your system.
+
+Next Steps:
+See https://istio.io/latest/docs/setup/install/ to add Istio to your Kubernetes cluster.
+
+To configure the istioctl client tool for your workstation,
+add the /home/jaekwanjeon/bin/istio-1.17.1/bin directory to your environment path variable with:
+	 export PATH="$PATH:/home/jaekwanjeon/bin/istio-1.17.1/bin"
+
+Begin the Istio pre-installation check by running:
+	 istioctl x precheck 
+
+Need more information? Visit https://istio.io/latest/docs/setup/install/ 
 
 
+$ cd istio-1.17.1
+$ export PATH=$PWD/bin:$PATH
+
+$ istioctl profile list
+Istio configuration profiles:
+    ambient
+    default
+    demo
+    empty
+    external
+    minimal
+    openshift
+    preview
+    remote
+
+$ istioctl install --set profile=demo -y
+ Istio core installed                                                          
+- Processing resources for Istiod. Waiting for Deployment/istio-system/istiod   
+✔ Istiod installed                                                                                                        
+✔ Egress gateways installed                                                                                               
+✔ Ingress gateways installed                                                                                              
+✔ Installation complete                                                                                                   Making this installation the default for injection and validation.
+
+Thank you for installing Istio 1.17.  Please take a few minutes to tell us about your install/upgrade experience!  https://forms.gle/hMHGiwZHPU7UQRWe9
+
+$ kubectl label namespace default istio-injection=enabled
+namespace/default labeled
+
+$ kubectl get ns -L istio-injection
+NAME              STATUS   AGE   ISTIO-INJECTION
+covid             Active   30h   
+default           Active   11d   enabled
+istio-system      Active   49m   
+kube-flannel      Active   11d   
+kube-node-lease   Active   11d   
+kube-public       Active   11d   
+kube-system       Active   11d   
+login             Active   11d   
+
+
+$ kubectl apply -f samples/bookinfo/platform/kube/bookinfo.yaml
+service/details created
+serviceaccount/bookinfo-details created
+deployment.apps/details-v1 created
+service/ratings created
+serviceaccount/bookinfo-ratings created
+deployment.apps/ratings-v1 created
+service/reviews created
+serviceaccount/bookinfo-reviews created
+deployment.apps/reviews-v1 created
+deployment.apps/reviews-v2 created
+deployment.apps/reviews-v3 created
+service/productpage created
+serviceaccount/bookinfo-productpage created
+deployment.apps/productpage-v1 created
+
+$ kubectl get services
+NAME          TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+details       ClusterIP   10.104.225.32    <none>        9080/TCP         1s
+frontend      ClusterIP   10.108.89.59     <none>        80/TCP           8h
+kubernetes    ClusterIP   10.96.0.1        <none>        443/TCP          11d
+mynginx-svc   NodePort    10.97.37.148     <none>        8080:31001/TCP   9h
+productpage   ClusterIP   10.102.189.189   <none>        9080/TCP         1s
+ratings       ClusterIP   10.99.68.126     <none>        9080/TCP         1s
+reviews       ClusterIP   10.96.141.2      <none>        9080/TCP         1s
+
+$ kubectl get pods
+NAME                          READY   STATUS     RESTARTS      AGE
+details-v1-6997d94bb9-t26hc   0/2     Init:0/1   0             2s
+frontend-66dccbdd6d-clr6b     1/1     Running    1 (29m ago)   8h
+frontend-66dccbdd6d-d5782     1/1     Running    1 (29m ago)   8h
+ratings-v1-b8f8fcf49-fmn9f    0/2     Init:0/1   0             1s
+
+$kubectl exec "$(kubectl get pod -l app=ratings -o jsonpath='{.items[0].metadata.name}')" -c ratings -- curl -sS productpage:9080/productpage | grep -o "<title>.*</title>"
+
+$ kubectl apply -f samples/bookinfo/networking/bookinfo-gateway.yaml
+gateway.networking.istio.io/bookinfo-gateway created
+virtualservice.networking.istio.io/bookinfo created
+
+$ istioctl analyze
+✔ No validation issues found when analyzing namespace: default
+
+$ export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
+$ export SECURE_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="https")].nodePort}')
+$ export INGRESS_HOST=$(kubectl get po -l istio=ingressgateway -n istio-system -o jsonpath='{.items[0].status.hostIP}')
+
+$ export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT
+$ echo "$GATEWAY_URL"
+192.168.0.3:30468
+```
+![image](https://user-images.githubusercontent.com/3446997/226106623-799d187a-40b4-4886-b848-e8610b76e4b9.png)
+
+#### 설치 예제(Istio 폴더)
+
+```
+$ kubectl apply -f ./istio/
+$ kubectl apply -f .
+deployment.apps/frontend unchanged
+service/frontend-svc created
+gateway.networking.istio.io/simple-istio-gateway unchanged
+virtualservice.networking.istio.io/simple-vertual-service unchanged
+
+$ istioctl analyze
+✔ No validation issues found when analyzing namespace: default.
+
+$ export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
+jaekwanjeon@kubernetes-master:~/arch-k8s-sample/kubernetes-sample/istio$ export SECURE_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="https")].nodePort}'
+> )
+$ export INGRESS_HOST=$(kubectl get po -l istio=ingressgateway -n istio-system -o jsonpath='{.items[0].status.hostIP}')
+$ export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT
+$ echo "$GATEWAY_URL"
+192.168.0.3:30468
+$ curl 192.168.0.3:30468
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
 ```
